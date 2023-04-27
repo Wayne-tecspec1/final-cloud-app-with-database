@@ -77,8 +77,6 @@ class Lesson(models.Model):
 
 
 # Enrollment model
-# <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
-# And we could use the enrollment to track information such as exam submissions
 class Enrollment(models.Model):
     AUDIT = 'audit'
     HONOR = 'honor'
@@ -94,14 +92,13 @@ class Enrollment(models.Model):
     mode = models.CharField(max_length=5, choices=COURSE_MODES, default=AUDIT)
     rating = models.FloatField(default=5.0)
 
-
+# Question model
 class Question(models.Model):
     question_text = models.CharField(max_length=200, default="What's the question..")
     grade_point = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    # Foreign key to lesson
 
-    # <HINT> A sample model method to calculate if learner get the score of the question
+
     def is_get_score(self, selected_ids):
 
         all_answers = self.choice_set.filter(is_correct=True).count()
@@ -112,21 +109,13 @@ class Question(models.Model):
             return False
 
 
-#  <HINT> Create a Choice Model with:
-    # Used to persist choice content for a question
-    # One-To-Many (or Many-To-Many if you want to reuse choices) relationship with Question
-    # Choice content
-    # Indicate if this choice of the question is a correct one or not
-    # Other fields and methods you would like to design
+# Choice model
 class Choice(models.Model):
     choice_text = models.CharField(max_length=200, default="What's the choice..")
     choice_stat = models.BooleanField(default=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
-# <HINT> The submission model
-# One enrollment could have multiple submission
-# One submission could have multiple choices
-# One choice could belong to multiple submissions
+# Submission model
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
